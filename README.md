@@ -1,5 +1,5 @@
 ---
-title: "SCDMarkIRR"
+title: "AutoBarriersCode"
 output: html_document
 ---
 
@@ -22,8 +22,8 @@ Agreement above chance.  Do not use weighted, but this assumes there is some ord
 Now we are running the actual program.
 ```{r}
 library(devtools)
-install_github("iqss-research/VA-package")
-install_github("iqss-research/ReadMeV1")
+#install_github("iqss-research/VA-package")
+#install_github("iqss-research/ReadMeV1")
 library(ReadMe)
 ```
 Here we are cleaning the data
@@ -83,16 +83,16 @@ dim(filename)
 ```
 Now we need to create the training and truth data sets.  We are grabbing matt's codes from the matt data set and that will be the "truth" data set.  Then we will stack on the "" for the rest of the values
 ```{r}
-head(matt)
-truth = matt[c(2)]
+matt = read.csv("HandCodesMattMolly.csv", header = TRUE)
+truth = matt[c(3)]
 names(truth) = c("truth")
 truth = as.data.frame(truth)
 dim(truth)
-truth1 = data.frame(a = rep("", 401-102))
+truth1 = data.frame(a = rep("", 401-100))
 names(truth1) = c("truth")
 truth1 = as.data.frame(truth1)
 truth = rbind(truth, truth1)
-
+dim(truth)
 # Now we are creating the codes to indicate the training set
 trainingset1 = data.frame(a = rep(1,100))
 trainingset1 = as.data.frame(trainingset1)
@@ -100,10 +100,9 @@ trainingset2 = data.frame(a = rep(0, 401-100))
 trainingset2 = as.data.frame(trainingset2)
 trainingset = rbind(trainingset1, trainingset2)
 names(trainingset) = c("trainingset")
+
 control = cbind(filename, truth, trainingset)
 write.table(control, "control.txt", row.names = FALSE, sep = ",")
-head(control)
-
 ```
 Now we run the program
 ```{r}
