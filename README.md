@@ -1,5 +1,5 @@
 ---
-title: "SCDMarkIRR"
+title: "AutoBarriersCode"
 output: html_document
 ---
 
@@ -8,13 +8,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 Here we are loading and cleaning the data
 ```{r}
-setwd("~/Desktop")
-matt = read.csv("HandCodesMattMolly.csv", header = TRUE)
-head(matt)
-matt = matt[c(3:4)]
-head(matt)
-library(psych)
-cohen.kappa(matt)
+setwd("~/Desktop/QualPreAuto")
+# matt = data.frame(read.csv("HandCodesMattMolly.csv", header = TRUE))
+# head(matt)
+# matt = matt[c(3:4)]
+# head(matt)
+# library(psych)
+# cohen.kappa(matt)
 
 ```
 Agreement above chance.  Do not use weighted, but this assumes there is some order to the nomial values.  So we are penalized more when I answer 1 and she answers 6 even though 
@@ -22,13 +22,13 @@ Agreement above chance.  Do not use weighted, but this assumes there is some ord
 Now we are running the actual program.
 ```{r}
 library(devtools)
-install_github("iqss-research/VA-package")
-install_github("iqss-research/ReadMeV1")
+#install_github("iqss-research/VA-package")
+#install_github("iqss-research/ReadMeV1")
 library(ReadMe)
+
 ```
 Here we are cleaning the data
 ```{r}
-setwd("~/Desktop/QualData")
 rbbcsc = read.csv("RBBCSCStaffSurvey.csv", header = TRUE)
 rbbcsc = as.data.frame(rbbcsc)
 mccsc = read.csv("MCCSCStaffSurvey.csv", header = TRUE)
@@ -61,8 +61,6 @@ library(devtools)
 source_url("https://gist.github.com/benmarwick/9266072/raw/csv2txts.R")
 csv2txt("~/Desktop/QualAuto", labels = 1)
 ```
-
-
 Now we are creating the control.txt file, because you already created the txt file with the responses
 ```{r}
 set.seed(1)
@@ -82,28 +80,33 @@ filename = as.data.frame(filename)
 dim(filename)
 ```
 Now we need to create the training and truth data sets.  We are grabbing matt's codes from the matt data set and that will be the "truth" data set.  Then we will stack on the "" for the rest of the values
+
+Double check the numbers and make sure you understand how this works.  Is it ok if the id values don't match for the hand codes and your values?
 ```{r}
-head(matt)
-truth = matt[c(2)]
+# setwd("~/Desktop/QualPreAuto")
+# matt = read.csv("HandCodesMattMolly.csv", header = TRUE)
+# setwd("~/Desktop/QualAuto")
+truth = matt[c(3)]
 names(truth) = c("truth")
 truth = as.data.frame(truth)
 dim(truth)
-truth1 = data.frame(a = rep("", 401-102))
+truth1 = data.frame(a = rep("", 401-100))
 names(truth1) = c("truth")
 truth1 = as.data.frame(truth1)
 truth = rbind(truth, truth1)
-
+dim(truth)
 # Now we are creating the codes to indicate the training set
-trainingset1 = data.frame(a = rep(1,100))
+trainingset1 = data.frame(a = rep(1,101))
 trainingset1 = as.data.frame(trainingset1)
 trainingset2 = data.frame(a = rep(0, 401-100))
 trainingset2 = as.data.frame(trainingset2)
 trainingset = rbind(trainingset1, trainingset2)
 names(trainingset) = c("trainingset")
+dim(trainingset)
+dim(filename)
+dim(truth)
 control = cbind(filename, truth, trainingset)
 write.table(control, "control.txt", row.names = FALSE, sep = ",")
-head(control)
-
 ```
 Now we run the program
 ```{r}
